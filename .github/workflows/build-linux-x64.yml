@@ -34,7 +34,7 @@ on:
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs
     inputs:
       version:
-        description: 'The semver of the release'
+        description: "The semver of the release; 'current' builds the latest OpenOCD commit on master"
         required: false
         type: string
         default: 'current'
@@ -103,6 +103,8 @@ jobs:
 
       - name: 'Build linux-x64 binaries'
         timeout-minutes: 1440
+        env:
+          XBB_APPLICATION_OPENOCD_GIT_COMMIT: ${{github.event.inputs.version == 'current' && 'HEAD' || ''}}
         run: |
           xpm install --loglevel ${{github.event.inputs.xpm_install_loglevel}} ${{github.event.inputs.xpm_install_options}} -C build-assets
           xpm run docker-prepare --config linux-x64 --loglevel ${{github.event.inputs.xpm_install_loglevel}} ${{github.event.inputs.xpm_install_options}} -C build-assets
